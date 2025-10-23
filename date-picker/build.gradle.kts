@@ -65,7 +65,7 @@ mavenPublishing {
         name = "hijri-date-picker"
         description = "a compose multiplatform library for selecting hijri dates"
         inceptionYear = "2025"
-        url = "https://github.com/Helmy2/hijri.date.picker"
+        url = "https://github.com/Helmy2/hijri-date-picker"
         licenses {
             license {
                 name = "MIT"
@@ -80,7 +80,7 @@ mavenPublishing {
             }
         }
         scm {
-            url = "https://github.com/Helmy2/hijri.date.picker"
+            url = "https://github.com/Helmy2//hijri-date-picker"
         }
     }
 }
