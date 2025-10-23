@@ -1,19 +1,85 @@
-[![official project](http://jb.gg/badges/official.svg)](https://github.com/JetBrains#jetbrains-on-github)
+# Compose Hijri Date Picker
 
-# Multiplatform library template
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.helmy2/hijri-date-picker/0.0.1)](https://central.sonatype.com/artifact/io.github.helmy2/hijri-date-picker)
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-## What is it?
+A simple, clean, and Material 3-styled Hijri (Islamic) calendar and date picker for Jetpack Compose.
 
-This repository contains a simple library project, intended to demonstrate a [Kotlin Multiplatform](https://kotlinlang.org/docs/multiplatform.html) library that is deployable to [Maven Central](https://central.sonatype.com/).
+This library is built with **Kotlin Multiplatform (KMP)**, but this initial version **targets Android only**. Support for iOS, Desktop, and Web is planned for future releases.
 
-The library has only one function: generate the [Fibonacci sequence](https://en.wikipedia.org/wiki/Fibonacci_sequence) starting from platform-provided numbers. Also, it has a test for each platform just to be sure that tests run.
+[Image of the Hijri Date Picker component in light and dark mode]
 
-Note that no other actions or tools usually required for the library development are set up, such as [tracking of backwards compatibility](https://kotlinlang.org/docs/jvm-api-guidelines-backward-compatibility.html#tools-designed-to-enforce-backward-compatibility), explicit API mode, licensing, contribution guideline, code of conduct and others. You can find a guide for best practices for designing Kotlin libraries [here](https://kotlinlang.org/docs/api-guidelines-introduction.html).
+## ⚠️ Experimental Release: v0.0.1
 
-## Guide
+This is an early experimental release. It is intended for testing and feedback. The API is not yet stable and may change in future versions.
 
-Please find the detailed guide [here](https://www.jetbrains.com/help/kotlin-multiplatform-dev/multiplatform-publish-libraries.html).
+---
 
-# Other resources
-* [Publishing via the Central Portal](https://central.sonatype.org/publish-ea/publish-ea-guide/)
-* [Gradle Maven Publish Plugin \- Publishing to Maven Central](https://vanniktech.github.io/gradle-maven-publish-plugin/central/)
+## ✨ Features
+
+* **Material 3 Design:** A clean, modern UI that fits perfectly with M3 themes.
+* **Lightweight & Simple API:** Just one composable to call: `HijriDatePicker(...)`.
+* **Full Localization:**
+    * Month and day names are automatically localized.
+    * Numbers are converted to Arabic-Indic digits (`٠١٢٣`) when using an Arabic locale.
+    * Layout automatically switches to **RTL** for Arabic.
+
+---
+
+## 🚀 Installation
+
+This library is published to **Maven Central**.
+
+As this is an **Android-only** release, you can add it directly to your app's `build.gradle.kts` file:
+
+```kotlin
+// In your app/build.gradle.kts
+dependencies {
+    implementation("io.github.helmy2:hijri-date-picker:0.0.1")
+}
+```
+
+### 💻 Usage
+Call the HijriDatePicker composable from your code. You can show it in a Dialog, AlertDialog, or ModalBottomSheet.
+
+``` kotlin
+
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.text.intl.Locale
+import io.github.helmy2.HijriDatePicker 
+
+// ...
+
+var showPicker by remember { mutableStateOf(false) }
+
+if (showPicker) {
+    // 2. CALL THE COMPOSABLE
+    HijriDatePicker(
+        // Use a specific locale or Locale.current()
+        locale = Locale("ar"), 
+        onDateSelected = { hijriDate ->
+            // 'hijriDate' is your KmpHijriDate object
+            // (e.g., "${hijriDate.day}/${hijriDate.month}/${hijriDate.year}")
+            showPicker = false
+        },
+        onDismissRequest = {
+            showPicker = false
+        }
+    )
+}
+```
+
+## 🗺️ Roadmap 
+This library is structured for KMP, with platform support planned as follows:
+
+- [x] ✅ Android
+
+- [ ] ⏳ Desktop (JVM) (Coming soon)
+
+- [ ] ⏳ iOS (Coming in a future release)
+
+- [ ] ⏳ Web (JS) (Coming in a future release)
+
+## 📄 License
+This library is licensed under the Apache 2.0 License.
