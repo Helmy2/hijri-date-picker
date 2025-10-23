@@ -5,6 +5,8 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.android.kotlin.multiplatform.library)
     alias(libs.plugins.vanniktech.mavenPublish)
+    alias(libs.plugins.composeMultiplatform)
+    alias(libs.plugins.kotlin.compose)
 }
 
 group = "io.github.helmy2"
@@ -39,7 +41,11 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            //put your multiplatform dependencies here
+            implementation(compose.runtime)
+            implementation(compose.foundation)
+            implementation(compose.ui)
+            implementation(compose.material3)
+            implementation(compose.materialIconsExtended)
         }
 
         commonTest.dependencies {
@@ -56,9 +62,9 @@ mavenPublishing {
     coordinates(group.toString(), "hijri-date-picker", version.toString())
 
     pom {
-        name = "My library"
-        description = "A library."
-        inceptionYear = "2024"
+        name = "hijri-date-picker"
+        description = "a compose multiplatform library for selecting hijri dates"
+        inceptionYear = "2025"
         url = "https://github.com/Helmy2/hijri.date.picker"
         licenses {
             license {

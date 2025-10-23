@@ -1,0 +1,45 @@
+package io.github.helmy2
+
+import androidx.compose.ui.text.intl.Locale
+
+
+/**
+ * A platform-agnostic representation of a Hijri Date.
+ * The 'actual' implementation will wrap the platform's native date class.
+ */
+expect class KmpHijriDate {
+    val year: Int
+    val month: Int // 1-12
+    val day: Int   // 1-31
+
+    /** ISO-8601 day of week, where 1 is Monday and 7 is Sunday. */
+    val dayOfWeek: Int
+
+    fun lengthOfMonth(): Int
+
+    companion object {
+        fun now(): KmpHijriDate
+    }
+}
+
+/**
+ * A platform-agnostic factory for creating [KmpHijriDate] instances.
+ */
+expect object KmpHijriCalendar {
+    fun now(): KmpHijriDate
+    fun of(year: Int, month: Int, day: Int): KmpHijriDate
+}
+
+/**
+ * Formats a [KmpHijriDate] into a string based on a pattern and locale.
+ */
+expect fun formatHijriDate(
+    date: KmpHijriDate,
+    pattern: String,
+    locale: Locale
+): String
+
+/**
+ * Formats an integer into a string, using localized digits if available.
+ */
+expect fun formatNumber(number: Int, locale: Locale): String
