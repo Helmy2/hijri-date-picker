@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.intl.Locale
 
-enum class PickerMode { Month, Year }
+internal enum class PickerMode { Month, Year }
 
 /**
  * A state object that can be hoisted to observe and control the [HijriDatePicker].
@@ -28,8 +28,8 @@ class HijriDatePickerState(
      */
     var displayedYearMonth by mutableStateOf(
         Pair(
-            initialDate?.year ?: KmpHijriCalendar.now().year,
-            initialDate?.month ?: KmpHijriCalendar.now().month
+            initialDate?.year ?: HijriCalendar.now().year,
+            initialDate?.month ?: HijriCalendar.now().month
         )
     )
         private set
@@ -37,7 +37,7 @@ class HijriDatePickerState(
     /**
      * The current view mode (Month or Year grid).
      */
-    var pickerMode by mutableStateOf(PickerMode.Month)
+    internal var pickerMode by mutableStateOf(PickerMode.Month)
         private set
 
     // --- Public Methods to Mutate State ---
@@ -61,10 +61,10 @@ class HijriDatePickerState(
     fun onYearSelected(year: Int) {
         val month = displayedYearMonth.second
         val currentDay = selectedDate?.day ?: 1
-        val maxDay = KmpHijriCalendar.of(year, month, 1).lengthOfMonth()
+        val maxDay = HijriCalendar.of(year, month, 1).lengthOfMonth()
         val safeDay = currentDay.coerceAtMost(maxDay)
 
-        selectedDate = KmpHijriCalendar.of(year, month, safeDay)
+        selectedDate = HijriCalendar.of(year, month, safeDay)
         displayedYearMonth = Pair(year, month)
         pickerMode = PickerMode.Month
     }

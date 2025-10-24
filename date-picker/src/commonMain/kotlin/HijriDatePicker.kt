@@ -50,7 +50,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 
-// --- NEW: Height constants for stable layout ---
+// Height constants for stable layout ---
 private val DAY_CELL_HEIGHT = 40.dp
 private val DAY_CELL_SPACER = 4.dp
 private val MONTH_HEADER_HEIGHT = 52.dp
@@ -77,9 +77,11 @@ fun HijriDatePicker(
     state: HijriDatePickerState,
     modifier: Modifier = Modifier,
     colors: HijriDatePickerColors = HijriDatePickerDefaults.colors(),
+    strings: HijriDatePickerStrings = HijriDatePickerDefaults.strings(),
     dateFormatter: HijriDatePickerFormatter = HijriDatePickerDefaults.dateFormatter(),
     title: (@Composable () -> Unit)? = {
         HijriDatePickerDefaults.DatePickerTitle(
+            strings = strings,
             contentColor = colors.titleContentColor
         )
     },
@@ -87,6 +89,7 @@ fun HijriDatePicker(
         HijriDatePickerDefaults.DatePickerHeadline(
             selectedDate = state.selectedDate,
             dateFormatter = dateFormatter,
+            strings = strings,
             contentColor = colors.headlineContentColor
         )
     },
@@ -246,7 +249,7 @@ internal fun HijriCalendarView(
                 modifier = Modifier.clickable { state.onTogglePickerMode() },
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                val titleMonth = KmpHijriCalendar.of(
+                val titleMonth = HijriCalendar.of(
                     state.displayedYearMonth.first,
                     state.displayedYearMonth.second,
                     1
@@ -334,7 +337,7 @@ internal fun HijriCalendarGrid(
     colors: HijriDatePickerColors,
     onDayClick: (HijriDate) -> Unit
 ) {
-    val firstOfMonth = KmpHijriCalendar.of(year, month, 1)
+    val firstOfMonth = HijriCalendar.of(year, month, 1)
 
     val dowOfFirst = firstOfMonth.dayOfWeek // ISO 1=Mon..7=Sun
     val startIndex = (dowOfFirst + 1) % 7 // Sat=0, Sun=1, ... Fri=6
@@ -342,7 +345,7 @@ internal fun HijriCalendarGrid(
     val daysInMonth = firstOfMonth.lengthOfMonth()
     val cells = mutableListOf<HijriDate?>()
     for (i in 0 until startIndex) cells.add(null)
-    for (d in 1..daysInMonth) cells.add(KmpHijriCalendar.of(year, month, d))
+    for (d in 1..daysInMonth) cells.add(HijriCalendar.of(year, month, d))
     while (cells.size < 42) cells.add(null) // Ensure 6 rows
 
     Column {
@@ -362,7 +365,7 @@ internal fun HijriCalendarGrid(
                             date,
                             selectedDate
                         ),
-                        isToday = date != null && areSameHijriDate(date, KmpHijriCalendar.now()),
+                        isToday = date != null && areSameHijriDate(date, HijriCalendar.now()),
                         onClick = { d -> if (d != null) onDayClick(d) }
                     )
                 }

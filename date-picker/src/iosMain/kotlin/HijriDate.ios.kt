@@ -82,9 +82,9 @@ actual class HijriDate(
 /**
  * The actual iOS implementation of the calendar factory.
  */
-actual object KmpHijriCalendar {
+actual object HijriCalendar {
     // Create a single, reusable Hijri calendar instance
-    private val hijriCalendar = NSCalendar(calendarIdentifier = NSCalendarIdentifierIslamicUmmAlQura)!!
+    private val hijriCalendar = NSCalendar(calendarIdentifier = NSCalendarIdentifierIslamicUmmAlQura)
 
     // 👇 --- ADD THIS BLOCK ---
     /**

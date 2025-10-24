@@ -21,7 +21,7 @@ expect class HijriDate {
 /**
  * A platform-agnostic factory for creating [HijriDate] instances.
  */
-expect object KmpHijriCalendar {
+expect object HijriCalendar {
     fun now(): HijriDate
     fun of(year: Int, month: Int, day: Int): HijriDate
 }

@@ -10,6 +10,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
+import io.github.helmy2.date_picker.generated.resources.Res
+import io.github.helmy2.date_picker.generated.resources.hijri_date_picker_headline_default
+import io.github.helmy2.date_picker.generated.resources.hijri_date_picker_title
+import org.jetbrains.compose.resources.stringResource
 
 /**
  * Creates and remembers a [HijriDatePickerState].
@@ -52,19 +56,31 @@ object HijriDatePickerDefaults {
     fun colors(): HijriDatePickerColors = defaultDatePickerColors()
 
     /**
-     * The default composable for the title of the date picker.
+     * Creates and remembers the default [HijriDatePickerStrings].
+     */
+    @Composable
+    fun strings(): HijriDatePickerStrings {
+        return HijriDatePickerStrings(
+            selectDateTitle = stringResource(Res.string.hijri_date_picker_title),
+            selectDateHeadlineDefault = stringResource(Res.string.hijri_date_picker_headline_default)
+        )
+    }
+
+    /**
+     * UPDATED: The default composable for the title of the date picker.
      *
+     * @param strings The [HijriDatePickerStrings] to use.
      * @param modifier The [Modifier] to be applied to the title.
      * @param contentColor The color for the text.
      */
     @Composable
     fun DatePickerTitle(
+        strings: HijriDatePickerStrings, 
         modifier: Modifier = Modifier,
         contentColor: Color = colors().titleContentColor
     ) {
-        val text = if (Locale.current.language == "ar") "اختر التاريخ" else "Select date"
         Text(
-            text = text,
+            text = strings.selectDateTitle,
             style = MaterialTheme.typography.labelLarge,
             color = contentColor,
             modifier = modifier.padding(start = 24.dp, end = 12.dp, top = 16.dp, bottom = 12.dp)
@@ -72,10 +88,11 @@ object HijriDatePickerDefaults {
     }
 
     /**
-     * The default composable for the headline of the date picker.
+     * UPDATED: The default composable for the headline of the date picker.
      *
      * @param selectedDate The [HijriDate] to display.
      * @param dateFormatter The [HijriDatePickerFormatter] to use.
+     * @param strings The [HijriDatePickerStrings] to use.
      * @param modifier The [Modifier] to be applied to the headline.
      * @param contentColor The color for the text.
      */
@@ -83,15 +100,13 @@ object HijriDatePickerDefaults {
     fun DatePickerHeadline(
         selectedDate: HijriDate?,
         dateFormatter: HijriDatePickerFormatter,
+        strings: HijriDatePickerStrings, 
         modifier: Modifier = Modifier,
         contentColor: Color = colors().headlineContentColor,
     ) {
-        // TODO: Replace with string resources
-        val defaultText = if (Locale.current.language == "ar") "حدد تاريخ" else "Select a date"
-
         val text = selectedDate?.let {
             dateFormatter.formatHeadlineDate(it, Locale.current)
-        } ?: defaultText
+        } ?: strings.selectDateHeadlineDefault 
 
         Text(
             text = text,

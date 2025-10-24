@@ -27,7 +27,7 @@ actual class HijriDate(internal val javaDate: HijrahDate) {
 /**
  * The actual Android implementation of the calendar factory.
  */
-actual object KmpHijriCalendar {
+actual object HijriCalendar {
     actual fun now(): HijriDate = HijriDate(HijrahDate.now())
     actual fun of(year: Int, month: Int, day: Int): HijriDate =
         HijriDate(HijrahDate.of(year, month, day))
