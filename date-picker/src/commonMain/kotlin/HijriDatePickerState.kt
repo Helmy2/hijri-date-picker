@@ -93,4 +93,12 @@ class HijriDatePickerState(
         val prev = if (m == 1) Pair(y - 1, 12) else Pair(y, m - 1)
         displayedYearMonth = prev
     }
+
+    /**
+     * Sets the displayed month/year directly.
+     * This is used by the HorizontalPager to sync its state.
+     */
+    internal fun setDisplayedYearMonth(newMonth: Pair<Int, Int>) {
+        displayedYearMonth = newMonth
+    }
 }

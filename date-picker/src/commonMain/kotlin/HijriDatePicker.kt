@@ -23,8 +23,9 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.text.BasicText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
@@ -35,6 +36,9 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,19 +47,30 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
+
+// --- NEW: Height constants for stable layout ---
+private val DAY_CELL_HEIGHT = 40.dp
+private val DAY_CELL_SPACER = 4.dp
+private val MONTH_HEADER_HEIGHT = 52.dp
+private val WEEKDAY_HEADER_HEIGHT = 24.dp
+private val CALENDAR_TOP_PADDING = 8.dp
+private val WEEKDAY_TOP_PADDING = 8.dp
+
+// 6 rows of (day + spacer)
+private val CALENDAR_GRID_HEIGHT = (DAY_CELL_HEIGHT + DAY_CELL_SPACER) * 6
+
+// Total height of the month view
+private val CALENDAR_VIEW_HEIGHT = MONTH_HEADER_HEIGHT + CALENDAR_TOP_PADDING +
+        WEEKDAY_HEADER_HEIGHT + WEEKDAY_TOP_PADDING +
+        CALENDAR_GRID_HEIGHT
+// ----------------------------------------------
+
 
 /**
  * Public composable API for the Hijri Date Picker.
- *
- * This composable is stateless and observes a [HijriDatePickerState].
- *
- * @param state The hoisted [HijriDatePickerState] that holds the selected date
- * and internal view state.
- * @param modifier The [Modifier] to be applied to the date picker.
- * @param colors The [HijriDatePickerColors] to customize the picker's appearance.
- * @param dateFormatter The [HijriDatePickerFormatter] to customize date formatting.
- * @param title The composable slot for the picker's title (e.g., "Select date").
- * @param headline The composable slot for the picker's headline (e.g., "12 Ramadan 1446").
+ * (Omitted KDoc for brevity, no changes here)
  */
 @Composable
 fun HijriDatePicker(
@@ -109,6 +124,7 @@ internal fun HijriDatePickerDialogContent(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
+                .height(CALENDAR_VIEW_HEIGHT)
                 .padding(horizontal = 12.dp)
         ) {
             AnimatedContent(
@@ -157,18 +173,72 @@ internal fun HijriDatePickerDialogContent(
 
 /* --------------------------- Calendar (Month) ------------------------- */
 
+// --- Helper functions for Pager ---
+private const val INITIAL_PAGE = Int.MAX_VALUE / 2
+
+private fun monthsDifference(start: Pair<Int, Int>, end: Pair<Int, Int>): Int {
+    return (end.first - start.first) * 12 + (end.second - start.second)
+}
+
+private fun plusMonths(start: Pair<Int, Int>, months: Int): Pair<Int, Int> {
+    val totalMonths = start.first * 12 + (start.second - 1) + months
+    val newYear = totalMonths / 12
+    val newMonth = totalMonths % 12 + 1
+    return Pair(newYear, newMonth)
+}
+
 @Composable
 internal fun HijriCalendarView(
     state: HijriDatePickerState,
     colors: HijriDatePickerColors,
     dateFormatter: HijriDatePickerFormatter
 ) {
-    val isArabic = state.locale.language == "ar"
     val onSurface = MaterialTheme.colorScheme.onSurface
+    val baseMonth = remember { state.displayedYearMonth }
+
+    fun pageToMonth(page: Int): Pair<Int, Int> {
+        val monthOffset = page - INITIAL_PAGE
+        return plusMonths(baseMonth, monthOffset)
+    }
+
+    fun monthToPage(month: Pair<Int, Int>): Int {
+        val monthOffset = monthsDifference(baseMonth, month)
+        return INITIAL_PAGE + monthOffset
+    }
+
+    val pagerState = rememberPagerState(
+        initialPage = monthToPage(state.displayedYearMonth),
+        pageCount = { Int.MAX_VALUE }
+    )
+
+    // --- State Synchronization ---
+    LaunchedEffect(pagerState) {
+        snapshotFlow { pagerState.settledPage }
+            .distinctUntilChanged()
+            .filter { it != monthToPage(state.displayedYearMonth) }
+            .collect { page ->
+                val newMonth = pageToMonth(page)
+                state.setDisplayedYearMonth(newMonth)
+            }
+    }
+
+    LaunchedEffect(state.displayedYearMonth) {
+        val targetPage = monthToPage(state.displayedYearMonth)
+        if (targetPage != pagerState.currentPage) {
+            if (targetPage == pagerState.currentPage + 1 || targetPage == pagerState.currentPage - 1) {
+                pagerState.animateScrollToPage(targetPage)
+            } else {
+                pagerState.scrollToPage(targetPage)
+            }
+        }
+    }
+    // -----------------------------
 
     Column {
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(MONTH_HEADER_HEIGHT),
             verticalAlignment = Alignment.CenterVertically
         ) {
 
@@ -176,14 +246,13 @@ internal fun HijriCalendarView(
                 modifier = Modifier.clickable { state.onTogglePickerMode() },
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                val displayedHijriMonthStart =
-                    KmpHijriCalendar.of(
-                        state.displayedYearMonth.first,
-                        state.displayedYearMonth.second,
-                        1
-                    )
+                val titleMonth = KmpHijriCalendar.of(
+                    state.displayedYearMonth.first,
+                    state.displayedYearMonth.second,
+                    1
+                )
                 Text(
-                    text = dateFormatter.formatMonthYear(displayedHijriMonthStart, state.locale),
+                    text = dateFormatter.formatMonthYear(titleMonth, state.locale),
                     style = MaterialTheme.typography.titleMedium
                 )
                 Icon(
@@ -212,41 +281,59 @@ internal fun HijriCalendarView(
             }
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(Modifier.height(CALENDAR_TOP_PADDING))
 
-        // Weekday headers (simple localized labels)
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+        // Weekday headers (localized labels)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(WEEKDAY_HEADER_HEIGHT),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             val shortDays = getNarrowWeekdayNames(state.locale)
+
             shortDays.forEach { d ->
                 Text(
                     text = d,
-                    modifier = Modifier.width(40.dp),
+                    modifier = Modifier.width(DAY_CELL_HEIGHT),
                     style = MaterialTheme.typography.bodySmall,
                     textAlign = TextAlign.Center
                 )
             }
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(Modifier.height(WEEKDAY_TOP_PADDING))
 
-        // Calendar grid
-        HijriCalendarGrid(
-            state = state,
-            colors = colors
-        )
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(CALENDAR_GRID_HEIGHT)
+        ) { page ->
+            val (year, month) = pageToMonth(page)
+
+            HijriCalendarGrid(
+                year = year,
+                month = month,
+                selectedDate = state.selectedDate,
+                locale = state.locale,
+                colors = colors,
+                onDayClick = { state.onDaySelected(it) }
+            )
+        }
     }
 }
 
 @Composable
 internal fun HijriCalendarGrid(
-    state: HijriDatePickerState,
-    colors: HijriDatePickerColors
+    year: Int,
+    month: Int,
+    selectedDate: HijriDate?,
+    locale: Locale,
+    colors: HijriDatePickerColors,
+    onDayClick: (HijriDate) -> Unit
 ) {
-    val year = state.displayedYearMonth.first
-    val month = state.displayedYearMonth.second
-    val selectedDate = state.selectedDate
-
-    // First day of the hijri month
     val firstOfMonth = KmpHijriCalendar.of(year, month, 1)
 
     val dowOfFirst = firstOfMonth.dayOfWeek // ISO 1=Mon..7=Sun
@@ -256,7 +343,7 @@ internal fun HijriCalendarGrid(
     val cells = mutableListOf<HijriDate?>()
     for (i in 0 until startIndex) cells.add(null)
     for (d in 1..daysInMonth) cells.add(KmpHijriCalendar.of(year, month, d))
-    while (cells.size < 42) cells.add(null)
+    while (cells.size < 42) cells.add(null) // Ensure 6 rows
 
     Column {
         for (row in 0 until 6) {
@@ -266,21 +353,21 @@ internal fun HijriCalendarGrid(
             ) {
                 for (col in 0 until 7) {
                     val idx = row * 7 + col
-                    val date = cells[idx]
+                    val date = cells.getOrNull(idx)
                     DayCell(
                         date = date,
-                        locale = state.locale,
+                        locale = locale,
                         colors = colors,
                         isSelected = date != null && selectedDate != null && areSameHijriDate(
                             date,
                             selectedDate
                         ),
                         isToday = date != null && areSameHijriDate(date, KmpHijriCalendar.now()),
-                        onClick = { d -> if (d != null) state.onDaySelected(d) }
+                        onClick = { d -> if (d != null) onDayClick(d) }
                     )
                 }
             }
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(DAY_CELL_SPACER))
         }
     }
 }
@@ -294,7 +381,12 @@ internal fun DayCell(
     isToday: Boolean,
     onClick: (HijriDate?) -> Unit
 ) {
-    val size = 40.dp
+    val size = DAY_CELL_HEIGHT
+
+    if (date == null) {
+        Box(modifier = Modifier.width(size).height(size))
+        return
+    }
 
     val cellModifier = Modifier
         .width(size)
@@ -307,33 +399,28 @@ internal fun DayCell(
             }
         )
 
-    val finalModifier = if (date != null && isToday && !isSelected) {
+    val finalModifier = if (isToday && !isSelected) {
         cellModifier.border(1.dp, colors.todayDateBorderColor, CircleShape)
     } else {
         cellModifier
     }
 
-
     Box(
         modifier = finalModifier
-            .clickable(enabled = date != null) { onClick(date) },
+            .clickable { onClick(date) },
         contentAlignment = Alignment.Center
     ) {
-        if (date != null) {
-            val dayNumber = date.day
-            Text(
-                text = formatNumber(dayNumber, locale), // Using our expect util
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
-                color = when {
-                    isSelected -> colors.onSelectedDayContainerColor
-                    isToday -> colors.todayDateContentColor
-                    else -> colors.dayContentColor
-                }
-            )
-        } else {
-            BasicText("")
-        }
+        val dayNumber = date.day
+        Text(
+            text = formatNumber(dayNumber, locale),
+            style = MaterialTheme.typography.bodyMedium,
+            fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
+            color = when {
+                isSelected -> colors.onSelectedDayContainerColor
+                isToday -> colors.todayDateContentColor
+                else -> colors.dayContentColor
+            }
+        )
     }
 }
 
@@ -367,7 +454,7 @@ internal fun HijriYearPicker(
         columns = GridCells.Fixed(3),
         modifier = Modifier
             .fillMaxWidth()
-            .height(320.dp),
+            .height(CALENDAR_VIEW_HEIGHT),
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp),
         content = {
