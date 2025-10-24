@@ -7,7 +7,7 @@ import androidx.compose.ui.text.intl.Locale
  * A platform-agnostic representation of a Hijri Date.
  * The 'actual' implementation will wrap the platform's native date class.
  */
-expect class KmpHijriDate {
+expect class HijriDate {
     val year: Int
     val month: Int // 1-12
     val day: Int   // 1-31
@@ -16,25 +16,21 @@ expect class KmpHijriDate {
     val dayOfWeek: Int
 
     fun lengthOfMonth(): Int
-
-    companion object {
-        fun now(): KmpHijriDate
-    }
 }
 
 /**
- * A platform-agnostic factory for creating [KmpHijriDate] instances.
+ * A platform-agnostic factory for creating [HijriDate] instances.
  */
 expect object KmpHijriCalendar {
-    fun now(): KmpHijriDate
-    fun of(year: Int, month: Int, day: Int): KmpHijriDate
+    fun now(): HijriDate
+    fun of(year: Int, month: Int, day: Int): HijriDate
 }
 
 /**
- * Formats a [KmpHijriDate] into a string based on a pattern and locale.
+ * Formats a [HijriDate] into a string based on a pattern and locale.
  */
 expect fun formatHijriDate(
-    date: KmpHijriDate,
+    date: HijriDate,
     pattern: String,
     locale: Locale
 ): String

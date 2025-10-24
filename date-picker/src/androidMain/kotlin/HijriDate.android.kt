@@ -6,10 +6,10 @@ import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoField
 
 /**
- * The actual Android implementation of [KmpHijriDate].
+ * The actual Android implementation of [HijriDate].
  * It wraps the Java [HijrahDate] class.
  */
-actual class KmpHijriDate(internal val javaDate: HijrahDate) {
+actual class HijriDate(internal val javaDate: HijrahDate) {
     actual val year: Int
         get() = javaDate.get(ChronoField.YEAR)
     actual val month: Int
@@ -22,28 +22,22 @@ actual class KmpHijriDate(internal val javaDate: HijrahDate) {
         get() = javaDate.get(ChronoField.DAY_OF_WEEK)
 
     actual fun lengthOfMonth(): Int = javaDate.lengthOfMonth()
-
-    actual companion object {
-        actual fun now(): KmpHijriDate {
-            return KmpHijriDate(HijrahDate.now())
-        }
-    }
 }
 
 /**
  * The actual Android implementation of the calendar factory.
  */
 actual object KmpHijriCalendar {
-    actual fun now(): KmpHijriDate = KmpHijriDate(HijrahDate.now())
-    actual fun of(year: Int, month: Int, day: Int): KmpHijriDate =
-        KmpHijriDate(HijrahDate.of(year, month, day))
+    actual fun now(): HijriDate = HijriDate(HijrahDate.now())
+    actual fun of(year: Int, month: Int, day: Int): HijriDate =
+        HijriDate(HijrahDate.of(year, month, day))
 }
 
 /**
  * The actual Android implementation for formatting a date.
  */
 actual fun formatHijriDate(
-    date: KmpHijriDate,
+    date: HijriDate,
     pattern: String,
     locale: Locale
 ): String {
