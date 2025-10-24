@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">عرض التاريخ الهجري</string>
+    <string name="dark_theme">الوضع الداكن</string>
+    <string name="language">اللغة</string>
+    <string name="switch_language">تغيير إلى الإنجليزية</string>
+    <string name="open_picker">افتح منتقي التاريخ</string>
+    <string name="no_date_selected">لم يتم اختيار تاريخ</string>
+    <string name="hijri_picker_ok">موافق</string>
+    <string name="hijri_picker_cancel">إلغاء</string>
+</resources>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Hijri Date Picker Demo</string>
+    <string name="dark_theme">Dark Theme</string>
+    <string name="language">Language</string>
+    <string name="switch_language">Switch to AR</string>
+    <string name="open_picker">Open Hijri Picker</string>
+    <string name="no_date_selected">No date selected</string>
+    <string name="hijri_picker_ok">OK</string>
+    <string name="hijri_picker_cancel">Cancel</string>
+</resources>
