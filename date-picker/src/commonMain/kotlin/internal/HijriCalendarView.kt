@@ -24,6 +24,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -193,16 +194,9 @@ internal fun HijriCalendarGrid(
     colors: HijriDatePickerColors,
     onDayClick: (HijriDate) -> Unit
 ) {
-    val firstOfMonth = HijriCalendar.of(year, month, 1)
-
-    val dowOfFirst = firstOfMonth.dayOfWeek // ISO 1=Mon..7=Sun
-    val startIndex = (dowOfFirst + 1) % 7 // Sat=0, Sun=1, ... Fri=6
-
-    val daysInMonth = firstOfMonth.lengthOfMonth()
-    val cells = mutableListOf<HijriDate?>()
-    for (i in 0 until startIndex) cells.add(null)
-    for (d in 1..daysInMonth) cells.add(HijriCalendar.of(year, month, d))
-    while (cells.size < 42) cells.add(null) // Ensure 6 rows
+    val cells = remember(year, month) {
+        generateCalendarCells(year, month)
+    }
 
     Column {
         for (row in 0 until 6) {
