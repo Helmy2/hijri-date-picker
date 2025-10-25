@@ -43,6 +43,7 @@ import io.github.helmy2.HijriDate
 import io.github.helmy2.HijriDatePickerColors
 import io.github.helmy2.HijriDatePickerFormatter
 import io.github.helmy2.HijriDatePickerState
+import io.github.helmy2.HijriDatePickerStrings
 import io.github.helmy2.MONTH_HEADER_HEIGHT
 import io.github.helmy2.WEEKDAY_HEADER_HEIGHT
 import io.github.helmy2.WEEKDAY_TOP_PADDING
@@ -54,7 +55,8 @@ import kotlinx.coroutines.flow.filter
 internal fun HijriCalendarView(
     state: HijriDatePickerState,
     colors: HijriDatePickerColors,
-    dateFormatter: HijriDatePickerFormatter
+    dateFormatter: HijriDatePickerFormatter,
+    strings: HijriDatePickerStrings
 ) {
     val onSurface = MaterialTheme.colorScheme.onSurface
 
@@ -117,7 +119,7 @@ internal fun HijriCalendarView(
                 )
                 Icon(
                     imageVector = Icons.Filled.ArrowDropDown,
-                    contentDescription = "Change year",
+                    contentDescription = strings.changeYearContentDescription,
                     tint = onSurface
                 )
             }
@@ -127,7 +129,7 @@ internal fun HijriCalendarView(
             IconButton(onClick = { state.onPreviousMonth() }) {
                 Icon(
                     Icons.AutoMirrored.Filled.KeyboardArrowLeft,
-                    contentDescription = "Previous month",
+                    contentDescription = strings.previousMonthContentDescription,
                     tint = onSurface
                 )
             }
@@ -135,7 +137,7 @@ internal fun HijriCalendarView(
             IconButton(onClick = { state.onNextMonth() }) {
                 Icon(
                     Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                    contentDescription = "Next month",
+                    contentDescription = strings.nextMonthContentDescription,
                     tint = onSurface
                 )
             }

@@ -2,4 +2,7 @@
 <resources>
     <string name="hijri_date_picker_title">Select date</string>
     <string name="hijri_date_picker_headline_default">Select a date</string>
+    <string name="hijri_date_picker_next_month">Next month</string>
+    <string name="hijri_date_picker_previous_month">Previous month</string>
+    <string name="hijri_date_picker_change_year">Change year</string>
 </resources>

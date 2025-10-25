@@ -31,11 +31,13 @@ import io.github.helmy2.formatNumber
 @Composable
 internal fun HijriYearPicker(
     state: HijriDatePickerState,
-    colors: HijriDatePickerColors
+    colors: HijriDatePickerColors,
 ) {
     val selectedYear = state.displayedYearMonth.first
 
-    val years = state.yearRange.toList()
+    val years = remember(state.yearRange) {
+        state.yearRange.toList()
+    }
 
     val selectedYearIndex = remember(years, selectedYear) {
         years.indexOf(selectedYear).coerceAtLeast(0)

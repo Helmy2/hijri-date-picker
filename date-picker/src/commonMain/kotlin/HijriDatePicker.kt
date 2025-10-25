@@ -69,7 +69,8 @@ fun HijriDatePicker(
         colors = colors,
         dateFormatter = dateFormatter,
         title = title,
-        headline = headline
+        headline = headline,
+        strings = strings
     )
 }
 
@@ -81,6 +82,7 @@ internal fun HijriDatePickerDialogContent(
     dateFormatter: HijriDatePickerFormatter,
     title: (@Composable () -> Unit)?,
     headline: (@Composable () -> Unit)?,
+    strings: HijriDatePickerStrings,
     animDuration: Int = 220
 ) {
     Column(
@@ -125,14 +127,15 @@ internal fun HijriDatePickerDialogContent(
                         HijriCalendarView(
                             state = state,
                             colors = colors,
-                            dateFormatter = dateFormatter
+                            dateFormatter = dateFormatter,
+                            strings = strings
                         )
                     }
 
                     PickerMode.Year -> {
                         HijriYearPicker(
                             state = state,
-                            colors = colors
+                            colors = colors,
                         )
                     }
                 }
