@@ -25,13 +25,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import io.github.helmy2.CALENDAR_VIEW_HEIGHT
 import io.github.helmy2.HijriDatePickerColors
+import io.github.helmy2.HijriDatePickerFormatter
 import io.github.helmy2.HijriDatePickerState
-import io.github.helmy2.formatNumber
 
 @Composable
 internal fun HijriYearPicker(
     state: HijriDatePickerState,
     colors: HijriDatePickerColors,
+    dateFormatter: HijriDatePickerFormatter,
 ) {
     val selectedYear = state.displayedYearMonth.first
 
@@ -89,7 +90,7 @@ internal fun HijriYearPicker(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = formatNumber(year, state.locale),
+                        text = dateFormatter.formatNumber(year, state.locale),
                         style = MaterialTheme.typography.bodyLarge,
                         color = if (isSelected) colors.onSelectedYearContainerColor else colors.yearContentColor,
                         fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal

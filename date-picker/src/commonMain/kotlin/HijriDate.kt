@@ -34,8 +34,3 @@ expect fun formatHijriDate(
     pattern: String,
     locale: Locale
 ): String
-
-/**
- * Formats an integer into a string, using localized digits if available.
- */
-expect fun formatNumber(number: Int, locale: Locale): String

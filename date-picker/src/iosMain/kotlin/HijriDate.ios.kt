@@ -8,8 +8,6 @@ import platform.Foundation.NSDate
 import platform.Foundation.NSDateComponents
 import platform.Foundation.NSDateFormatter
 import platform.Foundation.NSLocale
-import platform.Foundation.NSNumber
-import platform.Foundation.NSNumberFormatter
 import platform.darwin.NSInteger
 
 internal fun Locale.toNSLocale(): NSLocale {
@@ -133,13 +131,4 @@ actual fun formatHijriDate(
 
     dateFormatter.dateFormat = applePattern
     return dateFormatter.stringFromDate(date.nsDate)
-}
-
-/**
- * The actual iOS implementation for formatting a number.
- */
-actual fun formatNumber(number: Int, locale: Locale): String {
-    val formatter = NSNumberFormatter()
-    formatter.locale = locale.toNSLocale()
-    return formatter.stringFromNumber(NSNumber(number.toDouble())) ?: number.toString()
 }

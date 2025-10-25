@@ -20,4 +20,9 @@ expect class HijriDatePickerFormatter {
      * (e.g., "Ramadan 1446" or "رمضان ١٤٤٦").
      */
     fun formatMonthYear(date: HijriDate, locale: Locale = Locale.current): String
+
+    /**
+     * Formats an integer into a string, using localized digits if available.
+     */
+    fun formatNumber(number: Int, locale: Locale = Locale.current): String
 }

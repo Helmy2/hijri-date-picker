@@ -136,6 +136,7 @@ internal fun HijriDatePickerDialogContent(
                         HijriYearPicker(
                             state = state,
                             colors = colors,
+                            dateFormatter = dateFormatter
                         )
                     }
                 }

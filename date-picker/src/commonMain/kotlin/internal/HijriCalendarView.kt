@@ -47,7 +47,6 @@ import io.github.helmy2.HijriDatePickerStrings
 import io.github.helmy2.MONTH_HEADER_HEIGHT
 import io.github.helmy2.WEEKDAY_HEADER_HEIGHT
 import io.github.helmy2.WEEKDAY_TOP_PADDING
-import io.github.helmy2.formatNumber
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 
@@ -181,6 +180,7 @@ internal fun HijriCalendarView(
                 selectedDate = state.selectedDate,
                 locale = state.locale,
                 colors = colors,
+                dateFormatter = dateFormatter,
                 onDayClick = { state.onDaySelected(it) }
             )
         }
@@ -194,7 +194,8 @@ internal fun HijriCalendarGrid(
     selectedDate: HijriDate?,
     locale: Locale,
     colors: HijriDatePickerColors,
-    onDayClick: (HijriDate) -> Unit
+    dateFormatter: HijriDatePickerFormatter,
+    onDayClick: (HijriDate) -> Unit,
 ) {
     val cells = remember(year, month) {
         generateCalendarCells(year, month)
@@ -213,6 +214,7 @@ internal fun HijriCalendarGrid(
                         date = date,
                         locale = locale,
                         colors = colors,
+                        dateFormatter = dateFormatter,
                         isSelected = date != null && selectedDate != null && areSameHijriDate(
                             date,
                             selectedDate
@@ -234,7 +236,8 @@ internal fun DayCell(
     colors: HijriDatePickerColors,
     isSelected: Boolean,
     isToday: Boolean,
-    onClick: (HijriDate?) -> Unit
+    onClick: (HijriDate?) -> Unit,
+    dateFormatter: HijriDatePickerFormatter
 ) {
     val size = DAY_CELL_HEIGHT
 
@@ -267,7 +270,7 @@ internal fun DayCell(
     ) {
         val dayNumber = date.day
         Text(
-            text = formatNumber(dayNumber, locale),
+            text = dateFormatter.formatNumber(dayNumber, locale),
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
             color = when {
