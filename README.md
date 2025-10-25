@@ -179,4 +179,4 @@ Our goal is to bring the full functionality of the Material 3 Date Picker to the
 
 ## 📄 License
 
-This library is licensed under the **Apache 2.0 License**.
+This library is licensed under the **MIT License**.
