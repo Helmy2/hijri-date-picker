@@ -10,13 +10,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
-import io.github.helmy2.date_picker.generated.resources.Res
-import io.github.helmy2.date_picker.generated.resources.hijri_date_picker_change_year
-import io.github.helmy2.date_picker.generated.resources.hijri_date_picker_headline_default
-import io.github.helmy2.date_picker.generated.resources.hijri_date_picker_next_month
-import io.github.helmy2.date_picker.generated.resources.hijri_date_picker_previous_month
-import io.github.helmy2.date_picker.generated.resources.hijri_date_picker_title
-import org.jetbrains.compose.resources.stringResource
 
 /**
  * Creates and remembers a [HijriDatePickerState].
@@ -64,17 +57,10 @@ object HijriDatePickerDefaults {
 
     /**
      * Creates and remembers the default [HijriDatePickerStrings].
+     * by calling the platform-specific implementation.
      */
     @Composable
-    fun strings(): HijriDatePickerStrings {
-        return HijriDatePickerStrings(
-            selectDateTitle = stringResource(Res.string.hijri_date_picker_title),
-            selectDateHeadlineDefault = stringResource(Res.string.hijri_date_picker_headline_default),
-            nextMonthContentDescription = stringResource(Res.string.hijri_date_picker_next_month),
-            previousMonthContentDescription = stringResource(Res.string.hijri_date_picker_previous_month),
-            changeYearContentDescription = stringResource(Res.string.hijri_date_picker_change_year)
-        )
-    }
+    fun strings(): HijriDatePickerStrings = rememberDefaultDatePickerStrings()
 
     /**
      * UPDATED: The default composable for the title of the date picker.
@@ -129,3 +115,9 @@ object HijriDatePickerDefaults {
 }
 
 expect fun getHijriDatePickerFormatter(): HijriDatePickerFormatter
+
+/**
+ * Creates and remembers the default [HijriDatePickerStrings] for the current platform.
+ */
+@Composable
+internal expect fun rememberDefaultDatePickerStrings(): HijriDatePickerStrings
