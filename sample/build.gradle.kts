@@ -56,8 +56,8 @@ android {
 
     defaultConfig {
         applicationId = "io.github.helmy2.sample"
-        compileSdk = libs.versions.android.compileSdk.get().toInt()
         minSdk = libs.versions.android.minSdk.get().toInt()
+        targetSdk = libs.versions.android.compileSdk.get().toInt()
         versionCode = 1
         versionName = "1.0"
     }

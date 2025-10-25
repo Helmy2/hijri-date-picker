@@ -177,16 +177,26 @@ internal fun HijriDatePickerDialogContent(
 /* --------------------------- Calendar (Month) ------------------------- */
 
 // --- Helper functions for Pager ---
-private const val INITIAL_PAGE = Int.MAX_VALUE / 2
+// We use 1/1/1 AH as our absolute reference point (Page 0).
+private val REFERENCE_YEAR_MONTH = Pair(1, 1)
 
+/**
+ * Calculates the total number of months between two (year, month) pairs.
+ * (This function is updated for the new reference)
+ */
 private fun monthsDifference(start: Pair<Int, Int>, end: Pair<Int, Int>): Int {
     return (end.first - start.first) * 12 + (end.second - start.second)
 }
 
+/**
+ * Adds a number of months to a given (year, month) pair.
+ * (This function is updated for the new reference)
+ */
 private fun plusMonths(start: Pair<Int, Int>, months: Int): Pair<Int, Int> {
-    val totalMonths = start.first * 12 + (start.second - 1) + months
-    val newYear = totalMonths / 12
-    val newMonth = totalMonths % 12 + 1
+    // We calculate months from 1/1 AH, so we adjust by -1
+    val totalMonths = (start.first - 1) * 12 + (start.second - 1) + months
+    val newYear = totalMonths / 12 + 1 // Convert back to 1-based year
+    val newMonth = totalMonths % 12 + 1 // Convert back to 1-based month
     return Pair(newYear, newMonth)
 }
 
@@ -197,16 +207,13 @@ internal fun HijriCalendarView(
     dateFormatter: HijriDatePickerFormatter
 ) {
     val onSurface = MaterialTheme.colorScheme.onSurface
-    val baseMonth = remember { state.displayedYearMonth }
 
     fun pageToMonth(page: Int): Pair<Int, Int> {
-        val monthOffset = page - INITIAL_PAGE
-        return plusMonths(baseMonth, monthOffset)
+        return plusMonths(REFERENCE_YEAR_MONTH, page)
     }
 
     fun monthToPage(month: Pair<Int, Int>): Int {
-        val monthOffset = monthsDifference(baseMonth, month)
-        return INITIAL_PAGE + monthOffset
+        return monthsDifference(REFERENCE_YEAR_MONTH, month)
     }
 
     val pagerState = rememberPagerState(
@@ -437,16 +444,28 @@ internal fun HijriYearPicker(
     val selectedYear = state.displayedYearMonth.first
 
     // Range: selectedYear ± 50
-    val start = selectedYear - 50
-    val end = selectedYear + 50
-    val years = (start..end).toList()
+    val years = remember(state.yearRange, selectedYear) {
+        if (state.yearRange != null) {
+            // Use the developer-provided range
+            state.yearRange.toList()
+        } else {
+            // Use the default ± 50 range
+            val start = selectedYear - 50
+            val end = selectedYear + 50
+            (start..end).toList()
+        }
+    }
 
-    val selectedYearIndex = 50
+    val selectedYearIndex = remember(years, selectedYear) {
+        years.indexOf(selectedYear).coerceAtLeast(0)
+    }
     val itemsPerRow = 3
     val estimatedVisibleRows = 6
     val selectedRow = selectedYearIndex / itemsPerRow
+
     val firstVisibleRow = (selectedRow - (estimatedVisibleRows / 2)).coerceAtLeast(0)
     val initialFirstVisibleIndex = (firstVisibleRow * itemsPerRow)
+        .coerceIn(0, (years.size - 1).coerceAtLeast(0))
 
     val gridState = rememberLazyGridState(
         initialFirstVisibleItemIndex = initialFirstVisibleIndex

@@ -12,10 +12,13 @@ internal enum class PickerMode { Month, Year }
  *
  * @param initialDate The initial date to be selected.
  * @param locale The locale to be used for all date logic.
+ * @param yearRange An optional range of years to display in the year picker.
+ * If null, a default range of (currently displayed year ± 50) will be used.
  */
 class HijriDatePickerState(
     initialDate: HijriDate?,
     val locale: Locale,
+    val yearRange: IntRange? = null
 ) {
     /**
      * The currently selected date, or null if no date is selected.
