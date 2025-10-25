@@ -1,4 +1,4 @@
-package io.github.helmy2
+package io.github.helmy2.internal
 
 import androidx.compose.ui.text.intl.Locale
 import java.time.DayOfWeek

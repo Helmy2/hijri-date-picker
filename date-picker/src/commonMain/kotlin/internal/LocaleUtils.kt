@@ -1,6 +1,7 @@
-package io.github.helmy2
+package io.github.helmy2.internal
 
 import androidx.compose.ui.text.intl.Locale
+import io.github.helmy2.HijriDate
 
 /**
  * Gets a list of 7 narrow weekday names, ordered from Saturday to Friday,
