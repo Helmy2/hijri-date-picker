@@ -1,85 +1,171 @@
 # Compose Hijri Date Picker
 
-[![Maven Central](https://img.shields.io/maven-central/v/io.github.helmy2/hijri-date-picker/0.0.1)](https://central.sonatype.com/artifact/io.github.helmy2/hijri-date-picker)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.helmy2/hijri-date-picker/0.0.2)](https://central.sonatype.com/artifact/io.github.helmy2/hijri-date-picker)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-A simple, clean, and Material 3-styled Hijri (Islamic) calendar and date picker for Jetpack Compose.
-
-This library is built with **Kotlin Multiplatform (KMP)**, but this initial version **targets Android only**. Support for iOS, Desktop, and Web is planned for future releases.
-
-[Image of the Hijri Date Picker component in light and dark mode]
-
-## ⚠️ Experimental Release: v0.0.1
-
-This is an early experimental release. It is intended for testing and feedback. The API is not yet stable and may change in future versions.
-
----
+A simple, lightweight, and customizable Hijri (Islamic) date picker for **Compose Multiplatform (Android, iOS, and Desktop)**.
 
 ## ✨ Features
 
-* **Material 3 Design:** A clean, modern UI that fits perfectly with M3 themes.
-* **Lightweight & Simple API:** Just one composable to call: `HijriDatePicker(...)`.
-* **Full Localization:**
-    * Month and day names are automatically localized.
-    * Numbers are converted to Arabic-Indic digits (`٠١٢٣`) when using an Arabic locale.
-    * Layout automatically switches to **RTL** for Arabic.
+- **Multiplatform:** Works seamlessly on Android, iOS, and Desktop (JVM).
 
----
+- **Material 3 Design:** A clean, modern UI that fits perfectly with M3 themes.
+
+- **Lightweight & Hoistable API:** Uses a `HijriDatePickerState` for easy state management.
+
+- **Full Localization & Theming:**
+
+  - Month/day names and numbers (`٠١٢٣`) are automatically localized.
+
+  - Layout automatically switches to **RTL** for Arabic.
+
+  - **Customizable Colors:** All colors can be themed via `HijriDatePickerDefaults.colors()`.
+
+  - **Customizable Strings:** All text can be overridden for custom i18n via `HijriDatePickerDefaults.strings()`.
+
+- **Flexible:** Allows you to set a custom range of years for the year picker.
+
 
 ## 🚀 Installation
 
 This library is published to **Maven Central**.
 
-As this is an **Android-only** release, you can add it directly to your app's `build.gradle.kts` file:
+Add the dependency to your `commonMain` source set in your `build.gradle.kts` file:
 
 ```kotlin
-// In your app/build.gradle.kts
+// In your build.gradle.kts (in commonMain)
 dependencies {
-    implementation("io.github.helmy2:hijri-date-picker:0.0.1")
+    implementation("io.github.helmy2:hijri-date-picker:0.0.2")
 }
 ```
 
-### 💻 Usage
-Call the HijriDatePicker composable from your code. You can show it in a Dialog, AlertDialog, or ModalBottomSheet.
+## 💻 Usage
 
-``` kotlin
+### Basic Usage
 
+The `HijriDatePicker` is a content composable. It's designed to be placed inside a container like `DatePickerDialog` (from Material 3) or a `BottomSheet`.
+
+Here is a complete example of how to use it inside a `DatePickerDialog`:
+
+```kotlin
+import androidx.compose.material3.Button
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.text.intl.Locale
-import io.github.helmy2.HijriDatePicker 
+import androidx.compose.runtime.setValue
+import io.github.helmy2.HijriDatePicker
+import io.github.helmy2.HijriDate
+import io.github.helmy2.rememberHijriDatePickerState
+
+@Composable
+fun MyScreenWithPicker() {
+    var showPicker by remember { mutableStateOf(false) }
+    var selectedDate by remember { mutableStateOf<HijriDate?>(null) }
+    
+    // 1. Create and remember the state for the picker
+    val datePickerState = rememberHijriDatePickerState()
+
+    // 2. A button to show the dialog
+    Button(onClick = { showPicker = true }) {
+        Text("Show Hijri Date Picker")
+    }
+
+    // 3. Show the dialog when showPicker is true
+    if (showPicker) {
+        DatePickerDialog(
+            onDismissRequest = { showPicker = false },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        // 4. Get the date from the state and close the dialog
+                        selectedDate = datePickerState.selectedDate
+                        showPicker = false
+                    }
+                ) {
+                    Text("OK")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showPicker = false }) {
+                    Text("Cancel")
+                }
+            }
+        ) {
+            // 5. Place the HijriDatePicker as the dialog's content
+            HijriDatePicker(state = datePickerState)
+        }
+    }
+}
+```
+
+### Advanced Customization
+
+You can customize the picker by passing parameters to `rememberHijriDatePickerState` and `HijriDatePicker`.
+
+```kotlin
+import io.github.helmy2.HijriDatePicker
+import io.github.helmy2.HijriDatePickerDefaults
+import io.github.helmy2.KmpHijriCalendar
+import io.github.helmy2.rememberHijriDatePickerState
+import androidx.compose.ui.graphics.Color
 
 // ...
 
-var showPicker by remember { mutableStateOf(false) }
+val state = rememberHijriDatePickerState(
+    // Set an initial selected date
+    initialDate = KmpHijriCalendar.of(1447, 9, 1), // 1 Ramadan 1447
+    
+    // Provide a custom range of years for the year picker
+    yearRange = 1400..1450
+)
 
-if (showPicker) {
-    // 2. CALL THE COMPOSABLE
-    HijriDatePicker(
-        // Use a specific locale or Locale.current()
-        locale = Locale("ar"), 
-        onDateSelected = { hijriDate ->
-            // 'hijriDate' is your KmpHijriDate object
-            // (e.g., "${hijriDate.day}/${hijriDate.month}/${hijriDate.year}")
-            showPicker = false
-        },
-        onDismissRequest = {
-            showPicker = false
-        }
-    )
-}
+// Get the default colors and strings
+val customColors = HijriDatePickerDefaults.colors().copy(
+    selectedDayContainerColor = Color(0xFF800000), // Dark red
+    onSelectedDayContainerColor = Color.White
+)
+
+val customStrings = HijriDatePickerDefaults.strings().copy(
+    selectDateTitle = "Select Hijri Date"
+)
+
+HijriDatePicker(
+    state = state,
+    colors = customColors,
+    strings = customStrings
+)
 ```
 
 ## 🗺️ Roadmap 
-This library is structured for KMP, with platform support planned as follows:
+Our goal is to bring the full functionality of the Material 3 Date Picker to the Hijri calendar system.
 
-- [x] ✅ Android
+### Current Support
 
-- [ ] ⏳ Desktop (JVM) (Coming soon)
+- [x] ✅ **Single Date Selection**
 
-- [ ] ⏳ iOS (Coming in a future release)
+- [x] ✅ **Calendar View** (Month & Year)
 
-- [ ] ⏳ Web (JS) (Coming in a future release)
+- [x] ✅ **Android**
+
+- [x] ✅ **Desktop (JVM)**
+
+- [x] ✅ **iOS**
+
+
+### Future Enhancements
+
+- [ ] ⏳ **Date Range Selection:** Implement a `HijriDateRangePicker` for selecting a start and end date.
+
+- [ ] ⏳ **Date Input Mode:** Add a toggle to switch from the calendar grid to text fields for manual date entry.
+
+- [ ] ⏳ **Web (JS) Support:** Complete the KMP targets by adding a web canvas implementation.
+
+- [ ] ⏳ **Advanced Validation:** Add `SelectableDates` support to disable specific dates or ranges (e.g., weekends).
 
 ## 📄 License
-This library is licensed under the Apache 2.0 License.
+
+This library is licensed under the **Apache 2.0 License**.
