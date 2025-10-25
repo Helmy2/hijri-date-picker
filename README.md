@@ -5,6 +5,17 @@
 
 A simple, lightweight, and customizable Hijri (Islamic) date picker for **Compose Multiplatform (Android, iOS, and Desktop)**.
 
+## Screenshots
+
+Here is the date picker shown on Android in both light and dark modes, for both English (LTR) and Arabic (RTL) locales.
+
+| English (Light Mode)                                                                 | English (Dark Mode)                                                                |
+|--------------------------------------------------------------------------------------|------------------------------------------------------------------------------------|
+| <img src="images/android-light-en.png" alt="Android English Light Mode" width="300"> | <img src="images/android-dark-en.png" alt="Android English Dark Mode" width="300"> |
+| **Arabic (Light Mode)**                                                              | **Arabic (Dark Mode)**                                                             |
+| <img src="images/android-light-ar.png" alt="Android Arabic Light Mode" width="300">  | <img src="images/android-dark-ar.png" alt="Android Arabic Dark Mode" width="300">  |
+
+
 ## ✨ Features
 
 - **Multiplatform:** Works seamlessly on Android, iOS, and Desktop (JVM).
