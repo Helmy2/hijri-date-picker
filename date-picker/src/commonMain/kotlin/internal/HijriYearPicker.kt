@@ -15,6 +15,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,32 +35,34 @@ internal fun HijriYearPicker(
 ) {
     val selectedYear = state.displayedYearMonth.first
 
-    val years = remember(state.yearRange, selectedYear) {
-        if (state.yearRange != null) {
-            // Use the developer-provided range
-            state.yearRange.toList()
-        } else {
-            // Use the default ± 50 range
-            val start = selectedYear - 50
-            val end = selectedYear + 50
-            (start..end).toList()
-        }
-    }
+    val years = state.yearRange.toList()
 
     val selectedYearIndex = remember(years, selectedYear) {
         years.indexOf(selectedYear).coerceAtLeast(0)
     }
-    val itemsPerRow = 3
-    val estimatedVisibleRows = 6
-    val selectedRow = selectedYearIndex / itemsPerRow
-
-    val firstVisibleRow = (selectedRow - (estimatedVisibleRows / 2)).coerceAtLeast(0)
-    val initialFirstVisibleIndex = (firstVisibleRow * itemsPerRow)
-        .coerceIn(0, (years.size - 1).coerceAtLeast(0))
 
     val gridState = rememberLazyGridState(
-        initialFirstVisibleItemIndex = initialFirstVisibleIndex
+        initialFirstVisibleItemIndex = 0
     )
+
+    LaunchedEffect(selectedYearIndex) {
+        val itemsPerRow = 3
+        val estimatedVisibleRows = 6
+
+        // Calculate the row of the selected item
+        val selectedRow = selectedYearIndex / itemsPerRow
+
+        // Calculate the row to scroll to, attempting to put it
+        // near the middle of the visible rows.
+        val targetRow = (selectedRow - (estimatedVisibleRows / 2) + 1).coerceAtLeast(0)
+
+        // Convert the target row back to the first item index of that row
+        val targetIndex = (targetRow * itemsPerRow)
+            .coerceIn(0, (years.size - 1).coerceAtLeast(0))
+
+        // Animate the scroll
+        gridState.animateScrollToItem(index = targetIndex)
+    }
 
     LazyVerticalGrid(
         state = gridState,

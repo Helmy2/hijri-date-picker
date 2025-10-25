@@ -21,13 +21,13 @@ import org.jetbrains.compose.resources.stringResource
  * @param initialDate The initial date to be selected, or null for no selection.
  * @param locale The locale to be used for all date logic. Defaults to [Locale.current].
  * @param yearRange An optional range of years to display in the year picker.
- * If null, a default range of (currently displayed year ± 50) will be used.
+ * If null, a default range of (current year ± 50) will be used.
  */
 @Composable
 fun rememberHijriDatePickerState(
     initialDate: HijriDate? = null,
     locale: Locale = Locale.current,
-    yearRange: IntRange? = null
+    yearRange: IntRange = (HijriCalendar.now().year - 50)..(HijriCalendar.now().year + 50)
 ): HijriDatePickerState {
     return remember(initialDate, locale, yearRange) {
         HijriDatePickerState(
