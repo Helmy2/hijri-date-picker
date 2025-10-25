@@ -70,11 +70,28 @@ actual class HijriDate(
         dayComponent.setDay(-1)
 
         // Get the NSDate for the last day of *this* month
-        val lastOfThisMonth = calendar.dateByAddingComponents(dayComponent, toDate = firstOfNextMonth, options = 0u)!!
+        val lastOfThisMonth =
+            calendar.dateByAddingComponents(dayComponent, toDate = firstOfNextMonth, options = 0u)!!
 
         // Get the 'day' component of that last day. That's the length.
-        return calendar.component(platform.Foundation.NSCalendarUnitDay, fromDate = lastOfThisMonth).toInt()
+        return calendar.component(platform.Foundation.NSCalendarUnitDay, fromDate = lastOfThisMonth)
+            .toInt()
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is HijriDate) return false
+        return year == other.year && month == other.month && day == other.day
+    }
+
+    override fun hashCode(): Int {
+        var result = year
+        result = 31 * result + month
+        result = 31 * result + day
+        return result
+    }
+
+    override fun toString(): String = "HijriDate(year=$year, month=$month, day=$day)"
 }
 
 /**
@@ -82,7 +99,8 @@ actual class HijriDate(
  */
 actual object HijriCalendar {
     // Create a single, reusable Hijri calendar instance
-    private val hijriCalendar = NSCalendar(calendarIdentifier = NSCalendarIdentifierIslamicUmmAlQura)
+    private val hijriCalendar =
+        NSCalendar(calendarIdentifier = NSCalendarIdentifierIslamicUmmAlQura)
 
     // 👇 --- ADD THIS BLOCK ---
     /**
@@ -100,11 +118,22 @@ actual object HijriCalendar {
     }
 
     actual fun of(year: Int, month: Int, day: Int): HijriDate {
+        // Validate month
+        if (month !in 1..12) {
+            throw IllegalArgumentException("Invalid Hijri month: $month")
+        }
+
+        // Validate day - we allow 1..30 but later you can improve with exact month length validation
+        if (day !in 1..30) {
+            throw IllegalArgumentException("Invalid Hijri day: $day")
+        }
+
         val components = NSDateComponents()
         components.setYear(year.toLong())
         components.setMonth(month.toLong())
         components.setDay(day.toLong())
-        val date = hijriCalendar.dateFromComponents(components) ?: NSDate() // Fallback to now
+        val date = hijriCalendar.dateFromComponents(components)
+            ?: throw IllegalArgumentException("Invalid Hijri date: year=$year, month=$month, day=$day")
         return HijriDate(date, hijriCalendar)
     }
 }

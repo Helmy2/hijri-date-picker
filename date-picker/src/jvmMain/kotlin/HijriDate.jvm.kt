@@ -22,6 +22,22 @@ actual class HijriDate(internal val javaDate: HijrahDate) {
         get() = javaDate.get(ChronoField.DAY_OF_WEEK)
 
     actual fun lengthOfMonth(): Int = javaDate.lengthOfMonth()
+
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is HijriDate) return false
+        return year == other.year && month == other.month && day == other.day
+    }
+
+    override fun hashCode(): Int {
+        var result = year
+        result = 31 * result + month
+        result = 31 * result + day
+        return result
+    }
+
+    override fun toString(): String = "HijriDate(year=$year, month=$month, day=$day)"
 }
 
 /**
@@ -29,17 +45,18 @@ actual class HijriDate(internal val javaDate: HijrahDate) {
  */
 actual object HijriCalendar {
     actual fun now(): HijriDate = HijriDate(HijrahDate.now())
-    actual fun of(year: Int, month: Int, day: Int): HijriDate =
+    actual fun of(year: Int, month: Int, day: Int): HijriDate = try {
         HijriDate(HijrahDate.of(year, month, day))
+    } catch (e: java.time.DateTimeException) {
+        throw IllegalArgumentException(e.message, e)
+    }
 }
 
 /**
  * The actual Android implementation for formatting a date.
  */
 actual fun formatHijriDate(
-    date: HijriDate,
-    pattern: String,
-    locale: Locale
+    date: HijriDate, pattern: String, locale: Locale
 ): String {
     // We convert the Compose Locale to the Java Locale
     val javaLocale = locale.platformLocale
