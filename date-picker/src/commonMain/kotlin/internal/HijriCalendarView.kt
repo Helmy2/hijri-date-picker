@@ -215,11 +215,8 @@ internal fun HijriCalendarGrid(
                         locale = locale,
                         colors = colors,
                         dateFormatter = dateFormatter,
-                        isSelected = date != null && selectedDate != null && areSameHijriDate(
-                            date,
-                            selectedDate
-                        ),
-                        isToday = date != null && areSameHijriDate(date, HijriCalendar.now()),
+                        isSelected = date != null && selectedDate != null && date == selectedDate,
+                        isToday = date != null && date == HijriCalendar.now(),
                         onClick = { d -> if (d != null) onDayClick(d) }
                     )
                 }

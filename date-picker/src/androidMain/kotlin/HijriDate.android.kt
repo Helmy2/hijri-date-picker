@@ -1,6 +1,7 @@
 package io.github.helmy2
 
 import androidx.compose.ui.text.intl.Locale
+import io.github.helmy2.internal.convertToArabicIndicDigits
 import java.time.chrono.HijrahDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoField
@@ -54,11 +55,10 @@ actual object HijriCalendar {
  * The actual Android implementation for formatting a date.
  */
 actual fun formatHijriDate(
-    date: HijriDate,
-    pattern: String,
-    locale: Locale
+    date: HijriDate, pattern: String, locale: Locale
 ): String {
-    // We convert the Compose Locale to the Java Locale
     val javaLocale = locale.platformLocale
-    return date.javaDate.format(DateTimeFormatter.ofPattern(pattern, javaLocale))
+    val formatted = date.javaDate.format(DateTimeFormatter.ofPattern(pattern, javaLocale))
+    return if (javaLocale.language == "ar") formatted.convertToArabicIndicDigits()
+    else formatted
 }

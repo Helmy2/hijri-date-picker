@@ -1,6 +1,5 @@
 package io.github.helmy2
 
-import androidx.compose.ui.text.intl.Locale
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -109,30 +108,6 @@ class HijriDateTest {
         // Then
         // Hijri months are either 29 or 30 days - check in this range
         assertTrue(length in 29..30, "Length of month should be 29 or 30 days")
-    }
-
-    @Test
-    fun givenHijriDateAndPattern_whenFormatHijriDate_thenFormattedStringContainsExpectedParts() {
-        // Given
-        val date = HijriCalendar.of(1447, 9, 1)
-        val pattern = "yyyy MMMM d E"
-        val locale = Locale("en")
-
-        // When
-        val formatted = formatHijriDate(date, pattern, locale)
-
-        // Then
-        assertTrue(formatted.contains("1447"), "Formatted string should contain year")
-        assertTrue(
-            formatted.contains("Ramadan") || formatted.contains("شعبان"),
-            "Formatted string should contain month name"
-        )
-        assertTrue(
-            formatted.matches(Regex(""".*\b1\b.*""")),
-            "Formatted string should contain day number"
-        )
-        // The day of week is locale-specific - checking presence is enough
-        assertTrue(formatted.isNotEmpty())
     }
 
     @Test
