@@ -3,6 +3,7 @@ package io.github.helmy2
 
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.text.intl.Locale
+import io.github.helmy2.internal.convertToArabicIndicDigits
 import platform.Foundation.NSNumber
 import platform.Foundation.NSNumberFormatter
 
@@ -25,6 +26,7 @@ actual class HijriDatePickerFormatter {
     actual fun formatNumber(number: Int, locale: Locale): String {
         val formatter = NSNumberFormatter()
         formatter.locale = locale.toNSLocale()
-        return formatter.stringFromNumber(NSNumber(number.toDouble())) ?: number.toString()
+        val  formattedNumber = formatter.stringFromNumber(NSNumber(number.toDouble())) ?: number.toString()
+        return formattedNumber.convertToArabicIndicDigits()
     }
 }

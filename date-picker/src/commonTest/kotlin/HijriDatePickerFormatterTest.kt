@@ -92,7 +92,6 @@ class HijriDatePickerFormatterTest {
         val result = formatter.formatHeadlineDate(date, englishLocale)
 
         // English pattern is "E, MMM d" - check for abbreviated weekday name presence (e.g. Mon)
-        println(result)
         assertTrue(result.matches(Regex("""\w{3}, \w{3}\.?\s\d+""")), "Headline should match English date pattern")
     }
 
