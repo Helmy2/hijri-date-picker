@@ -13,13 +13,6 @@ import io.github.helmy2.HijriDate
 expect fun getNarrowWeekdayNames(locale: Locale): List<String>
 
 
-/** Simple equality check for HijrahDate day/month/year */
-internal fun areSameHijriDate(a: HijriDate, b: HijriDate): Boolean =
-    a.year == b.year
-            && a.month == b.month
-            && a.day == b.day
-
-
 /**
  * Generates a list of 42 cells (for a 6x7 grid) for a given Hijri month.
  *
@@ -62,4 +55,14 @@ internal fun generateCalendarCells(year: Int, month: Int): List<HijriDate?> {
     }
 
     return cells
+}
+
+fun String.convertToArabicIndicDigits(): String {
+    val westernDigits = "0123456789"
+    val arabicIndicDigits = "٠١٢٣٤٥٦٧٨٩"
+    var output = this
+    for (i in westernDigits.indices) {
+        output = output.replace(westernDigits[i], arabicIndicDigits[i])
+    }
+    return output
 }
