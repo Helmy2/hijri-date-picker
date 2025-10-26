@@ -1,6 +1,7 @@
 package io.github.helmy2
 
 import androidx.compose.ui.text.intl.Locale
+import io.github.helmy2.internal.convertToArabicIndicDigits
 import kotlinx.cinterop.ExperimentalForeignApi
 import platform.Foundation.NSCalendar
 import platform.Foundation.NSCalendarIdentifierIslamicUmmAlQura
@@ -8,6 +9,7 @@ import platform.Foundation.NSDate
 import platform.Foundation.NSDateComponents
 import platform.Foundation.NSDateFormatter
 import platform.Foundation.NSLocale
+import platform.Foundation.languageCode
 import platform.darwin.NSInteger
 
 internal fun Locale.toNSLocale(): NSLocale {
@@ -159,5 +161,7 @@ actual fun formatHijriDate(
         .replace("E", "ccc") // Short day of week
 
     dateFormatter.dateFormat = applePattern
-    return dateFormatter.stringFromDate(date.nsDate)
+    val formattedDate = dateFormatter.stringFromDate(date.nsDate)
+    return if (dateFormatter.locale.languageCode == "ar") formattedDate.convertToArabicIndicDigits()
+    else formattedDate
 }

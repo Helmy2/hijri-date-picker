@@ -38,8 +38,34 @@ internal val CALENDAR_VIEW_HEIGHT = MONTH_HEADER_HEIGHT + CALENDAR_TOP_PADDING +
 
 
 /**
- * Public composable API for the Hijri Date Picker.
- * (Omitted KDoc for brevity, no changes here)
+ * A composable that provides a full-screen Hijri (Islamic) date picker.
+ *
+ * This component allows users to select a date from the Hijri calendar. It consists of a
+ * title, a headline showing the selected date, and a calendar view for day, month, and year
+ * selection. The picker's state, including the selected date and current view (month or year),
+ * is managed by a [HijriDatePickerState] instance.
+ *
+ * The picker can be customized with different colors, strings, and date formatting.
+ *
+ * Example usage:
+ * ```
+ * val state = rememberHijriDatePickerState()
+ * HijriDatePicker(state = state)
+ * ```
+ *
+ * @param state The state object to be used to control and observe the date picker's state.
+ * @param modifier The modifier to be applied to the date picker.
+ * @param colors An optional [HijriDatePickerColors] that will be used to resolve the colors used for
+ * this date picker in different states. See [HijriDatePickerDefaults.colors].
+ * @param strings An optional [HijriDatePickerStrings] that will be used to provide custom strings
+ * for the date picker, such as the "OK" and "Cancel" button labels. See
+ * [HijriDatePickerDefaults.strings].
+ * @param dateFormatter An optional [HijriDatePickerFormatter] that will be used to format dates
+ * for display. See [HijriDatePickerDefaults.dateFormatter].
+ * @param title An optional composable to be displayed as the title of the date picker.
+ * Defaults to a standard title implementation.
+ * @param headline An optional composable to be displayed as the headline of the date picker,
+ * which typically shows the selected date. Defaults to a standard headline implementation.
  */
 @Composable
 fun HijriDatePicker(

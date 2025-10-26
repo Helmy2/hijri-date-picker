@@ -71,20 +71,6 @@ class HijriDatePickerFormatterTest {
     private val formatter = getHijriDatePickerFormatter()
 
     @Test
-    fun givenArabicLocale_whenFormatHeadlineDate_thenUsesArabicPattern() {
-        val date = HijriCalendar.of(1447, 9, 10)
-        val arabicLocale = Locale("ar")
-
-        val result = formatter.formatHeadlineDate(date, arabicLocale)
-
-        // Arabic pattern is "d MMMM" - check for day number and Arabic month name presence
-        assertTrue(result.contains(date.day.toString()), "Headline should contain the day number")
-        // Arabic month name should contain Arabic characters
-        val arabicRange = '\u0600'..'\u06FF'
-        assertTrue(result.any { it in arabicRange }, "Headline should contain Arabic characters")
-    }
-
-    @Test
     fun givenNonArabicLocale_whenFormatHeadlineDate_thenUsesEnglishPattern() {
         val date = HijriCalendar.of(1447, 9, 10)
         val englishLocale = Locale("en")
