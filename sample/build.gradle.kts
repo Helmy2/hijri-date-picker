@@ -16,8 +16,22 @@ kotlin {
 
     jvm()
 
+    listOf(
+        iosX64(),
+        iosArm64(),
+        iosSimulatorArm64()
+    ).forEach { iosTarget ->
+        iosTarget.binaries.framework {
+            baseName = "shared"
+            isStatic = true
+            freeCompilerArgs += "-Xbinary=bundleId=io.github.helmy2.sample"
+
+        }
+    }
+
     sourceSets {
         androidMain.dependencies {
+            implementation(libs.androidx.activity.compose)
             implementation(compose.preview)
         }
         commonMain.dependencies {
@@ -42,8 +56,8 @@ android {
 
     defaultConfig {
         applicationId = "io.github.helmy2.sample"
-        compileSdk = libs.versions.android.compileSdk.get().toInt()
         minSdk = libs.versions.android.minSdk.get().toInt()
+        targetSdk = libs.versions.android.compileSdk.get().toInt()
         versionCode = 1
         versionName = "1.0"
     }

@@ -10,7 +10,7 @@ plugins {
 }
 
 group = "io.github.helmy2"
-version = "0.0.1"
+version = "0.0.2"
 
 kotlin {
     jvm()
@@ -34,6 +34,7 @@ kotlin {
                 }
             }
         }
+        experimentalProperties["android.experimental.kmp.enableAndroidResources"] = true
     }
     iosX64()
     iosArm64()
@@ -46,11 +47,16 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.material3)
             implementation(compose.materialIconsExtended)
+            implementation(compose.components.resources)
         }
 
         commonTest.dependencies {
             implementation(libs.kotlin.test)
         }
+    }
+
+    compilerOptions {
+        freeCompilerArgs.add("-Xexpect-actual-classes")
     }
 }
 

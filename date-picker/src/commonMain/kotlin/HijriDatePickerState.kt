@@ -1,0 +1,106 @@
+package io.github.helmy2
+
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.text.intl.Locale
+
+internal enum class PickerMode { Month, Year }
+
+/**
+ * A state object that can be hoisted to observe and control the [HijriDatePicker].
+ *
+ * @param initialDate The initial date to be selected.
+ * @param locale The locale to be used for all date logic.
+ * @param yearRange An optional range of years to display in the year picker.
+ */
+class HijriDatePickerState(
+    initialDate: HijriDate?,
+    val locale: Locale,
+    val yearRange: IntRange
+) {
+    /**
+     * The currently selected date, or null if no date is selected.
+     */
+    var selectedDate by mutableStateOf(initialDate)
+        private set
+
+    /**
+     * The month/year pair currently being displayed in the calendar.
+     */
+    var displayedYearMonth by mutableStateOf(
+        Pair(
+            initialDate?.year ?: HijriCalendar.now().year,
+            initialDate?.month ?: HijriCalendar.now().month
+        )
+    )
+        private set
+
+    /**
+     * The current view mode (Month or Year grid).
+     */
+    internal var pickerMode by mutableStateOf(PickerMode.Month)
+        private set
+
+    // --- Public Methods to Mutate State ---
+
+    /**
+     * Handles the selection of a specific day.
+     *
+     * @param date The [HijriDate] that was clicked.
+     */
+    fun onDaySelected(date: HijriDate) {
+        selectedDate = date
+        displayedYearMonth = Pair(date.year, date.month)
+    }
+
+    /**
+     * Handles the selection of a specific year from the year picker.
+     * This action also switches the view back to [PickerMode.Month].
+     *
+     * @param year The year that was selected.
+     */
+    fun onYearSelected(year: Int) {
+        val month = displayedYearMonth.second
+        val currentDay = selectedDate?.day ?: 1
+        val maxDay = HijriCalendar.of(year, month, 1).lengthOfMonth()
+        val safeDay = currentDay.coerceAtMost(maxDay)
+
+        selectedDate = HijriCalendar.of(year, month, safeDay)
+        displayedYearMonth = Pair(year, month)
+        pickerMode = PickerMode.Month
+    }
+
+    /**
+     * Toggles the [pickerMode] between [PickerMode.Month] and [PickerMode.Year].
+     */
+    fun onTogglePickerMode() {
+        pickerMode = if (pickerMode == PickerMode.Month) PickerMode.Year else PickerMode.Month
+    }
+
+    /**
+     * Changes the displayed month to the next month.
+     */
+    fun onNextMonth() {
+        val (y, m) = displayedYearMonth
+        val next = if (m == 12) Pair(y + 1, 1) else Pair(y, m + 1)
+        displayedYearMonth = next
+    }
+
+    /**
+     * Changes the displayed month to the previous month.
+     */
+    fun onPreviousMonth() {
+        val (y, m) = displayedYearMonth
+        val prev = if (m == 1) Pair(y - 1, 12) else Pair(y, m - 1)
+        displayedYearMonth = prev
+    }
+
+    /**
+     * Sets the displayed month/year directly.
+     * This is used by the HorizontalPager to sync its state.
+     */
+    internal fun setDisplayedYearMonth(newMonth: Pair<Int, Int>) {
+        displayedYearMonth = newMonth
+    }
+}
