@@ -74,8 +74,8 @@ mavenPublishing {
         url = "https://github.com/Helmy2/hijri-date-picker"
         licenses {
             license {
-                name = "MIT"
-                url = "https://opensource.org/license/MIT"
+                name = "pache License 2.0"
+                url = "https://www.apache.org/licenses/LICENSE-2.0"
             }
         }
         developers {
